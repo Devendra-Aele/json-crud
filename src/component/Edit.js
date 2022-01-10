@@ -1,7 +1,9 @@
 import React,{useState,useEffect} from 'react'
 import { getuser,edituser} from '../servises/api'
+import {confirmAlert} from "react-confirm-alert"
+import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useNavigate,useParams } from 'react-router-dom';
-import { Button, FormControl, FormGroup, Input, InputLabel,makeStyles, Typography } from '@material-ui/core';
+import { Button, FormControl, FormGroup, Input, InputLabel,makeStyles, Typography ,TextField} from '@material-ui/core';
 const initialvalue={
     name:"",
     password:"",
@@ -11,8 +13,11 @@ const initialvalue={
 }
 
 
+
 function Edit() {
 const [user, setuser] = useState(initialvalue)
+// const [pop, setpop] = useState(ture)
+
 const {name,password,email,phone,address}=user;
 const navigate=useNavigate()
 const {id}=useParams();
@@ -29,33 +34,64 @@ const onvaluechange=(e)=>{
     setuser({...user,[e.target.name]:e.target.value})
 }
 
-const editUaserData=async()=>{
-  await edituser(id,user)
-   navigate('/user');
+const editUaserData=()=>{
+    confirmAlert({
+        title: 'Are you sure',
+        message: 'Do you Want To Edit this.',
+        buttons: [
+          {
+            label: 'Yes',
+            onClick:async () =>  { 
+                await edituser(id,user)
+                await navigate('/user')
+           },
+          },
+          {
+            label: 'No',
+            onClick: () => {}
+          }
+        ]
+      });
+  
 }
 
 const useStyle=makeStyles({
     inputtag:{
         width:"30%",
-        padding:"20px 40px",
+        padding:"20px 50px",
         background:"#dee2e6",
         position:'absolute',
+        // display:"flex",
+        // justifyContent:"center",
+        // alignItems:"center",
+        // margin:"40px auto",
         top:"50%",
         left:"50%",
-        transform:"translate(-50%,-60%)",
+        transform:"translate(-50%,-40%)",
         borderRadius:"0px 40px 0px 40px",
-        boxShadow:"5px 5px 20px 0px black"
-        
+        boxShadow:"5px 5px 20px 0px black",
+        "&>*":{
+            // fontSize:"20px",
+            margin: "10px 5px"
+        },
     },
     btn:{
         "&>*":{
             fontSize:"20px",
         },
         margin:"10px",
+    },
+    input:{
+        "&>*":{
+            fontSize:"20px",
+            margin:"10px ",
+        },
     }
+
 })
 const classes=useStyle();
     return (
+
         // <div className='loginform text-center' style={{ background: "#6610f2" }}>
         //     <h1 className='text-center' style={{ color: "white" }}>Edit Form</h1>
         //         <div className="form-floating mb-3">
@@ -87,9 +123,10 @@ const classes=useStyle();
 
         <FormGroup className={classes.inputtag} >
             <Typography variant="h4">Update Form</Typography>
-        <FormControl>
+        <FormControl >
             <InputLabel  label="Password"  color="primary" >Name</InputLabel>
             <Input onChange={(e)=>onvaluechange(e)} name="name" value={name}/>
+        {/* <TextField id="outlined-basic" label="Name" variant="outlined" onChange={(e)=>onvaluechange(e)} name="name" value={name}/> */}
         </FormControl>
         <FormControl>
             <InputLabel >Email address</InputLabel>

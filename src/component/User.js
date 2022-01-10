@@ -2,16 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { getuser, deleteUser } from '../servises/api'
 import { Table, TableBody, TableCell, TableHead, TableContainer, TableRow, makeStyles } from '@material-ui/core'
 import { Link } from 'react-router-dom'
-// import { confirmAlert } from 'react-confirm-alert';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+import { confirmAlert } from "react-confirm-alert"
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function User() {
     const usestyle = makeStyles({
         table: {
-            width:"80%",
-            position:'absolute',
-            top:"50%",
-            left:"50%",
-            transform:"translate(-50%,-100%)"
+            width: "80%",
+            // padding:"20px 100px",
+            // margin:"0px 50px",
+            position: 'absolute',
+            top: "120px",
+            left: "10%",
+
         },
         row: {
             '&>*': {
@@ -34,13 +39,27 @@ function User() {
 
     const getalluser = async () => {
         const response = await getuser()
-        console.log(response.data)
         setuserarry(response.data)
     }
     const deletebtn = async (id) => {
-        console.log('clicked')
-        await deleteUser(id);
-        getalluser();
+        confirmAlert({
+            title: 'Are you sure',
+            message: 'Do you Want To Delete this.',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: async () => {
+                        await toast.success(" User Is Delete Succesfully🚮");
+                        await deleteUser(id);
+                        await getalluser();
+                    },
+                },
+                {
+                    label: 'No',
+                    onClick: () => { }
+                }
+            ]
+        });
     }
 
     return (
