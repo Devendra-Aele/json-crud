@@ -7,18 +7,31 @@ import { Button, FormControl, FormGroup, Input, InputLabel, Typography, makeStyl
 
 const initialvalue = {
     name: "",
-    password: "",
-    email: "",
+    last_name: "",
+    // password: "",
+    // email: "",
     phone: "",
-    address: ''
+    // address: ''
 }
 function Login() {
-    const [user, setuser] = useState(initialvalue)
-    const { name, password, email, phone, address } = user;
+    const [users, setuser] = useState(initialvalue)
+    const { name, last_name, email, phone } = users;
+    // const schema= Yup.object
     const navigate = useNavigate()
+
     const onvaluechange = (e) => {
-        setuser({ ...user, [e.target.name]: e.target.value })
-        console.log(user)
+        setuser({ ...users, [e.target.name]: e.target.value })
+        // console.log(user)
+    }
+    const params = new URLSearchParams()
+    params.append('first_name', users.name)
+    params.append('last_name', users.last_name)
+    params.append('email', users.email)
+    params.append('phone', users.phone)
+    const config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
     }
     const useStyle = makeStyles({
         inputtag: {
@@ -26,9 +39,9 @@ function Login() {
             padding: "20px 40px",
             background: "#dee2e6",
             position: 'absolute',
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%,-40%)",
+            top: "100px",
+            left: "30%",
+            // transform: "translate(-50%,-40%)",
             borderRadius: "0px 40px 0px 40px",
             boxShadow: "5px 5px 20px 0px black",
             "&>*": {
@@ -45,7 +58,8 @@ function Login() {
     const classes = useStyle();
     const AddUaserData = async () => {
         await toast.success("New User Is Added Succesfully 🧑");
-        adduser(user)
+        console.log(params)
+        await adduser(params,config)
         navigate('/user');
 
     }
@@ -86,20 +100,24 @@ function Login() {
             <Typography variant="h4">Add Form</Typography>
             <FormControl>
                 <InputLabel label="Password" color="primary" >Name</InputLabel>
-                <Input onChange={(e) => onvaluechange(e)} name="name" value={name} />
+                <Input onChange={(e) => onvaluechange(e)} name="name" value={name}/>
+            </FormControl>
+            <FormControl>
+                <InputLabel >Last Name</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="last_name" value={last_name} />
             </FormControl>
             <FormControl>
                 <InputLabel >Email address</InputLabel>
                 <Input onChange={(e) => onvaluechange(e)} name="email" value={email} />
             </FormControl>
-            <FormControl>
+            {/* <FormControl>
                 <InputLabel >Password</InputLabel>
-                <Input onChange={(e) => onvaluechange(e)} name="password" value={password} />
-            </FormControl>
-            <FormControl>
+                <Input onChange={(e) => onvaluechange(e)} name="password"  value={password} />
+            </FormControl> */}
+            {/* <FormControl>
                 <InputLabel >Address</InputLabel>
                 <Input onChange={(e) => onvaluechange(e)} name="address" value={address} />
-            </FormControl>
+            </FormControl> */}
             <FormControl>
                 <InputLabel >Phone No.</InputLabel>
                 <Input onChange={(e) => onvaluechange(e)} name="phone" value={phone} />
@@ -108,5 +126,4 @@ function Login() {
         </FormGroup>
     )
 }
-
 export default Login

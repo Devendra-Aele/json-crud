@@ -1,95 +1,108 @@
-import React,{useState,useEffect} from 'react'
-import { getuser,edituser} from '../servises/api'
-import {confirmAlert} from "react-confirm-alert"
+import React, { useState, useEffect } from 'react'
+import { getuser, edituser } from '../servises/api'
+import { confirmAlert } from "react-confirm-alert"
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { useNavigate,useParams } from 'react-router-dom';
-import { Button, FormControl, FormGroup, Input, InputLabel,makeStyles, Typography ,TextField} from '@material-ui/core';
-const initialvalue={
-    name:"",
-    password:"",
-    email:"",
-    phone:"",
-    address:''
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button, FormControl, FormGroup, Input, InputLabel, makeStyles, Typography, TextField } from '@material-ui/core';
+const initialvalue = {
+    name: "",
+    first_name:"",
+    last_name:"",
+    password: "",
+    email: "",
+    phone: "",
+    address: ''
 }
 
 
 
 function Edit() {
-const [user, setuser] = useState(initialvalue)
-// const [pop, setpop] = useState(ture)
+    const [user, setuser] = useState(initialvalue)
+    const { first_name,last_name, email, phone } = user;
 
-const {name,password,email,phone,address}=user;
-const navigate=useNavigate()
-const {id}=useParams();
-useEffect(() => {
-  loaduserData();
-}, [])
+    const navigate = useNavigate()
+    const { id } = useParams();
 
-const loaduserData=async()=>{
-const response=await getuser(id)
-setuser(response.data)
-}
+    
 
-const onvaluechange=(e)=>{
-    setuser({...user,[e.target.name]:e.target.value})
-}
+    useEffect(() => {
+        loaduserData();
+    }, [])
 
-const editUaserData=()=>{
-    confirmAlert({
-        title: 'Are you sure',
-        message: 'Do you Want To Edit this.',
-        buttons: [
-          {
-            label: 'Yes',
-            onClick:async () =>  { 
-                await edituser(id,user)
-                await navigate('/user')
-           },
-          },
-          {
-            label: 'No',
-            onClick: () => {}
-          }
-        ]
-      });
-  
-}
-
-const useStyle=makeStyles({
-    inputtag:{
-        width:"30%",
-        padding:"20px 50px",
-        background:"#dee2e6",
-        position:'absolute',
-        // display:"flex",
-        // justifyContent:"center",
-        // alignItems:"center",
-        // margin:"40px auto",
-        top:"50%",
-        left:"50%",
-        transform:"translate(-50%,-40%)",
-        borderRadius:"0px 40px 0px 40px",
-        boxShadow:"5px 5px 20px 0px black",
-        "&>*":{
-            // fontSize:"20px",
-            margin: "10px 5px"
-        },
-    },
-    btn:{
-        "&>*":{
-            fontSize:"20px",
-        },
-        margin:"10px",
-    },
-    input:{
-        "&>*":{
-            fontSize:"20px",
-            margin:"10px ",
-        },
+    const loaduserData = async () => {
+        console.log(id)
+        const response = await getuser(id)
+        setuser(response.data)
     }
 
-})
-const classes=useStyle();
+    const onvaluechange = (e) => {
+        setuser({ ...user, [e.target.name]: e.target.value })
+    }
+    const params = new URLSearchParams()
+    params.append('first_name', user.first_name)
+    params.append('last_name', user.last_name)
+    params.append('email', user.email)
+    params.append('phone', user.phone)
+    const config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }
+    // await axios.post('https://ezzyserver.herokuapp.com/api/users', params, config);
+    const editUaserData = () => {
+        confirmAlert({
+            title: 'Are you sure',
+            message: 'Do you Want To Edit this.',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: async () => {
+                        await toast.success("New User Is Edit Succesfully 🧑");
+                        await edituser(id, params,config)
+                        await navigate('/user')
+                    },
+                },
+                {
+                    label: 'No',
+                    onClick: () => { }
+                }
+            ]
+        });
+
+    }
+
+    const useStyle = makeStyles({
+        inputtag: {
+            width: "30%",
+            padding: "20px 50px",
+            background: "#dee2e6",
+            position: 'absolute',
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-40%)",
+            borderRadius: "0px 40px 0px 40px",
+            boxShadow: "5px 5px 20px 0px black",
+            "&>*": {
+                margin: "10px 5px"
+            },
+        },
+        btn: {
+            "&>*": {
+                fontSize: "20px",
+            },
+            margin: "10px",
+        },
+        input: {
+            "&>*": {
+                fontSize: "20px",
+                margin: "10px ",
+            },
+        }
+
+    })
+    const classes = useStyle();
     return (
 
         // <div className='loginform text-center' style={{ background: "#6610f2" }}>
@@ -123,31 +136,34 @@ const classes=useStyle();
 
         <FormGroup className={classes.inputtag} >
             <Typography variant="h4">Update Form</Typography>
-        <FormControl >
-            <InputLabel  label="Password"  color="primary" >Name</InputLabel>
-            <Input onChange={(e)=>onvaluechange(e)} name="name" value={name}/>
-        {/* <TextField id="outlined-basic" label="Name" variant="outlined" onChange={(e)=>onvaluechange(e)} name="name" value={name}/> */}
-        </FormControl>
-        <FormControl>
-            <InputLabel >Email address</InputLabel>
-            <Input onChange={(e)=>onvaluechange(e)} name="email" value={email}  />
-        </FormControl>
-        <FormControl>
-            <InputLabel >Password</InputLabel>
-            <Input onChange={(e)=>onvaluechange(e)} name="password" value={password} />
-        </FormControl>
-        <FormControl>
-            <InputLabel >Address</InputLabel>
-            <Input onChange={(e)=>onvaluechange(e)} name="address" value={address} />
-        </FormControl>
-        <FormControl>
-            <InputLabel >Phone No.</InputLabel>
-            <Input onChange={(e)=>onvaluechange(e)}  name="phone" value={phone} />
-        </FormControl>
-        <Button  variant="contained" className={classes.btn}  onClick={()=>editUaserData()}>Edit Data</Button>
-    </FormGroup>
+            <FormControl >
+                <InputLabel label="Password" color="primary" >First Name</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="first_name" value={first_name} />
+            </FormControl>
+            <FormControl >
+                <InputLabel  >First Name</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="last_name" value={last_name} />
+            </FormControl>
+            <FormControl>
+                <InputLabel >Email address</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="email" value={email} />
+            </FormControl>
+            {/* <FormControl>
+                <InputLabel >Password</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="password" value={password} />
+            </FormControl>
+            <FormControl>
+                <InputLabel >Address</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="address" value={address} />
+            </FormControl> */}
+            <FormControl>
+                <InputLabel >Phone No.</InputLabel>
+                <Input onChange={(e) => onvaluechange(e)} name="phone" value={phone} />
+            </FormControl>
+            <Button variant="contained" className={classes.btn} onClick={() => editUaserData()}>Edit Data</Button>
+        </FormGroup>
 
-    ) 
+    )
 }
 
 export default Edit
